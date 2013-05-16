@@ -1,4 +1,4 @@
-# ModbusRTU - js
+# ModbusRTU - js (alpha)
 Javascript implementation for the Modbus protocol!
 Draws heavely from too-tall-nate's modbus stack and minimalmodbus from python!
 
