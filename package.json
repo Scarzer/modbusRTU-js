@@ -1,0 +1,13 @@
+{
+    "name" : "modbusRTU-js",
+    "version" : "0.0.0",
+    "description" : "RTU interface for Modbus devices",
+    "author" : "Irving Derin",
+    "dependencies" : {
+        "serialport" : "1.0.8",
+        "put" : "0.0.6",
+        "bufferlist" : "0.1.0",
+        "binary" : "0.3.0"
+    }
+    "licence" : "MIT"
+}
