@@ -1,3 +1,9 @@
+/*
+    Parse the output of any serial message, and convert it into a Modbus message!
+    This is the startings of a SerialPort parser/modbusRTU slave server device
+
+
+ */
 var serial = require('serialport').SerialPort;
 var port = new serial('/dev/pts/2')
 var binary = require('binary')

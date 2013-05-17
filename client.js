@@ -13,7 +13,8 @@ var Put = require('put')
     , inherits = require('util').inherits
     , serial = require('serialport').SerialPort
     , crc = require('crc')
-    , log = console.log;
+    , log = console.log
+    , assert = require(assert);
 
 
 // Constants
@@ -62,7 +63,19 @@ exports.FUNCTION_CODES = {
 };
 
 function formRequestBuffer(slave, fc, register, numRegisters){
+    /*
+        slave -> Address of the slave device. (Number)
+        fs -> Function Code that you'd like to use. (Number)
+        register -> Starting address of your target Register (Number)
+        numRegisters -> Number of registers you'd like to read (Number)
+    */
+    assert(slave === 'number');
+    assert(fc === 'number');
+    assert(register === 'number');
+    assert(numRegisters === 'number');
+
 }
 
 function formResponseBuffer(){}
+
 
