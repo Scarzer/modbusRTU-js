@@ -5,7 +5,7 @@
 
  */
 var serial = require('serialport').SerialPort;
-var port = new serial('/dev/pts/2')
+var port = new serial('/dev/pts/8')
 var binary = require('binary')
 
 port.on('data', function(data){

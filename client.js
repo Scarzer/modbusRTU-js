@@ -8,13 +8,15 @@
 
 // Import Dependencies
 var Put = require('put')
-    , Buffer = require('buffers')
+    , buffer = require('buffer')
+    , bufferlist = require('buffers')
     , Binary = require('binary')
     , inherits = require('util').inherits
     , serial = require('serialport').SerialPort
+    , Put = require('put')
     , crc = require('crc')
     , log = console.log
-    , assert = require(assert);
+    , assert = require('assert');
 
 
 // Constants
@@ -69,13 +71,32 @@ function formRequestBuffer(slave, fc, register, numRegisters){
         register -> Starting address of your target Register (Number)
         numRegisters -> Number of registers you'd like to read (Number)
     */
-    assert(slave === 'number');
-    assert(fc === 'number');
-    assert(register === 'number');
-    assert(numRegisters === 'number');
+    assert(typeof slave === 'number');
+    assert(typeof fc === 'number');
+    assert(typeof register === 'number');
+    assert(typeof numRegisters === 'number');
+
+    console.log(slave)
+    console.log(fc)
+    console.log(register)
+    console.log(numRegisters)
+    var putMessage = Put()
+        .word8(slave)
+        .word8(fc)
+        .word16be(register)
+        .word16be(numRegisters)
+        .buffer()
+    //log(putMessage)
+    var finalMessage = bufferlist()
+
+    finalMessage.push(putMessage)
+    finalMessage.push(Put().word16le(crc.crcModbusHex(putMessage)).buffer())
+    //log(finalMessage.slice())
+    return finalMessage.slice();
 
 }
 
 function formResponseBuffer(){}
 
-
+foo = formRequestBuffer(4, 3, 123, 1);
+log(foo)
