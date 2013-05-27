@@ -96,7 +96,9 @@ function formRequestBuffer(slave, fc, register, numRegisters){
 
 }
 
+exports.formResponseBuffer = formRequestBuffer;
+
 function formResponseBuffer(){}
 
 foo = formRequestBuffer(4, 3, 123, 1);
-log(foo)
+//log(foo)
