@@ -8,26 +8,45 @@ var serial = require('serialport').SerialPort;
 var binary = require('binary')
 var repl = require('repl')
 serialPortEntry = process.argv[2];
-var port = new serial(serialPortEntry, function(err){
-    if(err) throw new Error("Please pass a serial port")
+
+exports.modbusParser = function(){
+    // Closure for the parsing function!
+
+
+    return function(emitter, buffer){
+        var output = binary.parse(buffer)
+            .word8('address')
+            .word8('function')
+            .word16bu('RegisterAddr')
+            .word16bu('numRegisters')
+            .word16bu('crc')
+            .vars
+
+        emitter.emit('data', output);
+
+    }
+}
+
+var port = new serial(serialPortEntry, {
+    parser: exports.modbusParser()
     });
 
-
-if(typeof serialPortEntry === 'undefined') throw new Error("Please pass a port!");
 console.log("Started MODBUS server on port " + serialPortEntry)
 
+//port.on('data', function(data){
+//    console.log(data);
+//    var output = binary.parse(data)
+//                    .word8('address')
+//                    .word8('function')
+//                    .word16bu('RegisterAddr')
+//                    .word16bu('numRegisters')
+//                    .word16bu('crc')
+//                    .vars
+//    output['crc'] = output['crc'].toString(16)
+//    console.log(output);
 port.on('data', function(data){
     console.log(data);
-    var output = binary.parse(data)
-                    .word8('address')
-                    .word8('function')
-                    .word16bu('RegisterAddr')
-                    .word16bu('numRegisters')
-                    .word16bu('crc')
-                    .vars
-    output['crc'] = output['crc'].toString(16)
-    console.log(output);
-
+})
 
     // TODO
     // 1) Write up a code that will send a response built in a modbus format
@@ -40,7 +59,6 @@ port.on('data', function(data){
     //          permission : 777
     //      }
     //  }
-});
 
 
 // repl.start("modbusRTU> ");

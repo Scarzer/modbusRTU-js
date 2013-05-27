@@ -25,7 +25,6 @@ var Put = require('put')
 const FUNCTION_CODE_LENGTH = 1;
 
 // Exceptions have a high bit set
-// i.e (0x80)
 const EXCEPTION_BIT = 1 << 7;
 
 exports.EXCEPTION_CODES = {
@@ -91,7 +90,6 @@ function formRequestBuffer(slave, fc, register, numRegisters){
 
     finalMessage.push(putMessage)
     finalMessage.push(Put().word16le(crc.crcModbusHex(putMessage)).buffer())
-    //log(finalMessage.slice())
     return finalMessage.slice();
 
 }
@@ -100,5 +98,4 @@ exports.formResponseBuffer = formRequestBuffer;
 
 function formResponseBuffer(){}
 
-foo = formRequestBuffer(4, 3, 123, 1);
-//log(foo)
+//foo = formRequestBuffer(4, 3, 123, 1);
