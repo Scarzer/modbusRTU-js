@@ -6,12 +6,15 @@
  */
 var serial = require('serialport').SerialPort;
 var binary = require('binary')
+var Put = require('put')
+var modbus = require('./modbusPacket.js').formResponseBuffer()
 var repl = require('repl')
 serialPortEntry = process.argv[2];
 
-exports.modbusParser = function(){
+exports.modbusParser = function(deviceName){
     // Closure for the parsing function!
 
+    var deviceMap = require('./'+deviceName+'.js')
 
     return function(emitter, buffer){
         var output = binary.parse(buffer)
@@ -28,12 +31,15 @@ exports.modbusParser = function(){
 }
 
 var port = new serial(serialPortEntry, {
+
     parser: exports.modbusParser()
     });
 
 console.log("Started MODBUS server on port " + serialPortEntry)
 
-//port.on('data', function(data){
+port.on('data', function(data){
+    port.write()
+});
 //    console.log(data);
 //    var output = binary.parse(data)
 //                    .word8('address')
@@ -45,6 +51,11 @@ console.log("Started MODBUS server on port " + serialPortEntry)
 //    output['crc'] = output['crc'].toString(16)
 //    console.log(output);
 port.on('data', function(data){
+    var resMessage = Put()
+        .word8(data['slave'])
+        .word8(data['function'])
+        .buffer()
+    port.write(resMessage)
     console.log(data);
 })
 

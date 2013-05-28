@@ -1,0 +1,31 @@
+{
+    "FPGA_Firmware" : {
+        "name" : "FPGA Firmware Number",
+        "min" : 0,
+        "max" : 327.67,
+        "scale" : 0.01,
+        "group" : "systemInfo",
+        "address" : 100
+
+    },
+
+    "DSP_Firmware" : {
+        "name" : "DSP_Firmware",
+        "min" : 0,
+        "max" : 327.67,
+        "scale" : 0.01,
+        "group" : "systemInfo",
+        "address" : 101
+    },
+
+    "DSP_Product" : {
+        "name" : "DSP_Product",
+        "min" : 0,
+        "max" : 327.67,
+        "scale" : 0.01,
+        "group" : "systemInfo",
+        "address" : 102
+    },
+
+
+}

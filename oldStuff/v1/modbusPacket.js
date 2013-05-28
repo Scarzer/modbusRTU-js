@@ -63,7 +63,7 @@ exports.FUNCTION_CODES = {
 
 };
 
-function formRequestBuffer(slave, fc, register, numRegisters){
+function formRequestBuffer(slave, fc, register, numRegisters, value){
     /*
         slave -> Address of the slave device. (Number)
         fs -> Function Code that you'd like to use. (Number)
@@ -75,17 +75,27 @@ function formRequestBuffer(slave, fc, register, numRegisters){
     assert(typeof register === 'number');
     assert(typeof numRegisters === 'number');
 
-    console.log(slave)
-    console.log(fc)
-    console.log(register)
-    console.log(numRegisters)
-    var putMessage = Put()
-        .word8(slave)
-        .word8(fc)
-        .word16be(register)
-        .word16be(numRegisters)
-        .buffer()
-    //log(putMessage)
+    if(fc === 3 || fc === 4){
+        // Just Reading a message
+        var putMessage = Put()
+            .word8(slave)
+            .word8(fc)
+            .word16be(register)
+            .word16be(numRegisters)
+            .buffer()
+    }
+
+    else if(fc === 6){
+        // Write to a register
+        assert(typeof value !== 'undefined')
+        var putMessage = Put()
+            .word8(slave)
+            .word8(fc)
+            .word16be(register)
+            .word16be(value)
+            .buffer()
+    }
+
     var finalMessage = bufferlist()
 
     finalMessage.push(putMessage)
@@ -99,3 +109,24 @@ exports.formResponseBuffer = formRequestBuffer;
 function formResponseBuffer(){}
 
 //foo = formRequestBuffer(4, 3, 123, 1);
+
+////////////////////////////////////
+// Parser Function!
+
+exports.modbusParser = function(){
+    // Closure for the parsing function!
+
+
+    return function(emitter, buffer){
+        var output = binary.parse(buffer)
+            .word8('address')
+            .word8('function')
+            .word16bu('RegisterAddr')
+            .word16bu('numRegisters')
+            .word16bu('crc')
+            .vars
+
+        emitter.emit('data', output);
+
+    }
+}
