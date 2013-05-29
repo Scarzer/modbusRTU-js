@@ -26,18 +26,30 @@ var parserFunction = function(){
 
     return function(emitter, buffer){
         b.push(buffer)
-        //console.log(b)
         if(b.length > 7){
+            console.log(b)
             response = Binary.parse(b)
                 .word8('address')
                 .word8('function')
                 .word8('byteCount')
-                .word16bu('value')
+                .word16bs('value')
                 .word16bu('crc')
                 .vars
+
+            if(response.function === 6){
+                response = Binary.parse(b)
+                    .word8('address')
+                    .word8('function')
+                    .word16bu('address')
+                    .word16bs('value')
+                    .word16bu('crc')
+                    .vars
+                b.splice(0,8)
+                emitter.emit('data', response)
+                return
+            }
             emitter.emit('data', response)
-            b.length = 0;
-            b.buffer = [];
+            b.splice(0,7)
         }
     }
 }
@@ -354,10 +366,20 @@ function setPowerCommand(power){
     // set the power
     // min - -100
     // max - 100
+    device.once('data', function(data){
+        console.log("Setting Power Command to " + power)
+        console.log(data)
+    })
     device.write(formRequestBuffer(slaveAddr,6,702, power))
 }
 
 function getPowerCommand(power){
+
+    device.once('data', function(data){
+        console.log("ONLY THIS FIRES ONCE, IT WORKED!!!")
+        console.log(data)
+    })
+
     device.write(formRequestBuffer(slaveAddr,3,702))
 
 }
@@ -526,11 +548,16 @@ function getInverterDCPowerAnalogHigh(){
 
 
 
+/*
 device.on('data', function(data){
+    console.log("Usual Data!")
     console.log(data)
+    console.log("\n")
 })
+*/
 
-setInterval(function(){getPowerCommand()}, 2000)
+setInterval(function(){setPowerCommand(1400)}, 1000)
+setInterval(function(){getPowerCommand()}, 1500)
 
 //repl.start('DeVice Input> ')
 
