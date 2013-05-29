@@ -17,12 +17,38 @@ var Put = require('put')
     , rtu = require('serialport').SerialPort
     , repl = require('repl');
 
+// Parser Function
+
+var parserFunction = function(){
+    var b = bufferlist();
+    var bufferLim = 7;
+    var response = {};
+
+    return function(emitter, buffer){
+        b.push(buffer)
+        //console.log(b)
+        if(b.length > 7){
+            response = Binary.parse(b)
+                .word8('address')
+                .word8('function')
+                .word8('byteCount')
+                .word16bu('value')
+                .word16bu('crc')
+                .vars
+            emitter.emit('data', response)
+            b.length = 0;
+            b.buffer = [];
+        }
+    }
+}
+
 // Options and commands
 
 var inverterPort = process.argv[2]
     , slaveAddr = parseInt(process.argv[3])
     , device = new rtu(inverterPort, {
-        baudrate: 38400
+        baudrate: 38400,
+        parser: parserFunction()
     });
 
 // Preliminary Device Map
@@ -332,6 +358,7 @@ function setPowerCommand(power){
 }
 
 function getPowerCommand(power){
+    device.write(formRequestBuffer(slaveAddr,3,702))
 
 }
 
@@ -500,20 +527,10 @@ function getInverterDCPowerAnalogHigh(){
 
 
 device.on('data', function(data){
-    // parse the data as it comes in!
     console.log(data)
-    var response = Binary.parse(data)
-        .word8('address')
-        .word8('function')
-        .word16bu('register')
-        .word16bu('value')
-        .word16bu('crc')
-        .vars
-    console.log(response)
-
-
 })
 
-setInterval(function(){console.log(getACVoltage())}, 2000)
+setInterval(function(){getPowerCommand()}, 2000)
 
 //repl.start('DeVice Input> ')
+
