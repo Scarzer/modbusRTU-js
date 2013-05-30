@@ -27,7 +27,7 @@ var parserFunction = function(){
     return function(emitter, buffer){
         b.push(buffer)
         if(b.length > 7){
-            console.log(b)
+           // console.log(b)
             response = Binary.parse(b)
                 .word8('address')
                 .word8('function')
@@ -40,16 +40,17 @@ var parserFunction = function(){
                 response = Binary.parse(b)
                     .word8('address')
                     .word8('function')
-                    .word16bu('address')
+                    .word16bu('regAddress')
                     .word16bs('value')
                     .word16bu('crc')
                     .vars
                 b.splice(0,8)
-                emitter.emit('data', response)
+                emitter.emit('6', response)
                 return
             }
-            emitter.emit('data', response)
+            emitter.emit('3', response)
             b.splice(0,7)
+            return
         }
     }
 }
@@ -366,16 +367,16 @@ function setPowerCommand(power){
     // set the power
     // min - -100
     // max - 100
-    device.once('data', function(data){
+    device.once('6', function(data){
         console.log("Setting Power Command to " + power)
         console.log(data)
     })
     device.write(formRequestBuffer(slaveAddr,6,702, power))
 }
 
-function getPowerCommand(power){
+function getPowerCommand(){
 
-    device.once('data', function(data){
+    device.once('3', function(data){
         console.log("ONLY THIS FIRES ONCE, IT WORKED!!!")
         console.log(data)
     })
@@ -555,9 +556,8 @@ device.on('data', function(data){
     console.log("\n")
 })
 */
-
-setInterval(function(){setPowerCommand(1400)}, 1000)
-setInterval(function(){getPowerCommand()}, 1500)
-
+var power = 10;
+setInterval(function(){setPowerCommand(power); power = power + 10}, 100)
+setInterval(function(){getPowerCommand();},200)
 //repl.start('DeVice Input> ')
 
